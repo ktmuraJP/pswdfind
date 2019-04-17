@@ -1,0 +1,5 @@
+# pswdfind
+# compile
+```
+> ./make.sh
+```
