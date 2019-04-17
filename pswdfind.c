@@ -3,6 +3,7 @@
 #include<string.h>
 #include<stdint.h>
 #include<unistd.h>
+#include<omp.h>
 
 char *filestrings(const char *filename)
 {
@@ -154,22 +155,33 @@ char **dictstrcat(char **ref, char **dict, char **res,
             max);
 }
 
-int main()
+void getargs(int argc, char **argv)
 {
-    char **dcatstr,**res,**ref,*fstr;
-    int len,max;
-    char **dict;
+    char **dcatstr,**dict,**res,**ref,*fstr;
+    char *dir;
+    int len,max,i;
     table_t t; 
-    char dir[] = "./data/greekalphabet";
+    
+    
+    if(argv[1] == NULL || argv[2] == NULL){
+        fprintf(stderr,"too short argument\n");
+        if(argv[2] == NULL)
+            fprintf(stderr,"max length not selected\n");
+        exit(1);
+    }
+    if (argc > 3)
+        fprintf(stderr,"too many arguments\n");
 
+    dir = argv[1];
+    max = atoi(argv[2]);
+    
+    
     fstr = filestrings(dir);
     t = strsplit(fstr,"\n");
-
-    dict = t.str;   
-    ref = t.str;   
+    dict = t.str;
+    ref = t.str;  
     res = NULL; 
     len = t.indx;
-    max = 18;
 
     dcatstr = dictstrcat(
             ref,
@@ -188,5 +200,9 @@ int main()
         **dcatstr++;
     }    
     fprintf(stderr,"\n");
-     
+}
+
+int main(int argc, char **argv)
+{
+    getargs(argc,argv);
 }
