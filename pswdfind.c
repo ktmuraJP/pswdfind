@@ -3,7 +3,6 @@
 #include<string.h>
 #include<stdint.h>
 #include<unistd.h>
-#include<omp.h>
 
 char *filestrings(const char *filename)
 {
