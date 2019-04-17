@@ -161,10 +161,6 @@ int main()
     char **dict;
     table_t t; 
     char dir[] = "./data/greekalphabet";
-    //char dir[] = "./data/engalphabet";
-    //char dir[] = "./data/ascii";
-    //char dir[] = "./data/words.txt";
-
 
     fstr = filestrings(dir);
     t = strsplit(fstr,"\n");
