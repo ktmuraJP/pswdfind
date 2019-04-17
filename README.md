@@ -1,5 +1,8 @@
-# pswdfind
 # compile
 ```
-> ./make.sh
+$./make.sh
+```
+# usage
+```
+$./pswdfind [dictionary data directory] [max length]
 ```
