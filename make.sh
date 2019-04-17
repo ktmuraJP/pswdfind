@@ -1,5 +1,4 @@
 #!/bin/sh
 SOURCE="pswdfind.c"
-EXEC="pf"
+EXEC="pswdfind"
 gcc $SOURCE -o $EXEC -g -lm -fopenmp -O3
-./$EXEC
