@@ -4,6 +4,33 @@
 #include<stdint.h>
 #include<unistd.h>
 
+char dict[24][7] = {
+    "alpha",
+    "beta",
+    "gamma",
+    "delta",
+    "epsilon",
+    "zeta",
+    "eta",
+    "theta",
+    "iota",
+    "kappa",
+    "lambda",
+    "mu",
+    "nu",
+    "xi",
+    "omicron",
+    "pi",
+    "rho",
+    "sigma",
+    "tau",
+    "upsilon",
+    "phi",
+    "chi",
+    "psi",
+    "omega",
+};
+
 char *filestrings(const char *filename)
 {
     FILE *fp;
@@ -65,69 +92,66 @@ table_t strsplit(char *str,char *tgt)
     return t;
 }
 
-
-
 char **dictstrcat(char **ref, char **dict,  
-        int reflen, int dictlen, int depth, int max)
+        int reflen, int dictlen, int loop, int max)
 {
     int rlen,dlen,catlen;
-    int match;
+    int _true;
     int i,j;
-    int loop;
-    char **buff,**rbuff;
-    size_t buffsize;
+    size_t size;
+    char **buff;
+    _true = 0;
 
-    buffsize = (size_t)dictlen*sizeof(char*);
-    match = 0;
-    loop = 0;
-    buff = (char**)malloc(buffsize);
- 
+    if(ref == NULL){
+        size = sizeof(char*)*dictlen;
+        ref = (char**)malloc(size);
+        ref = memcpy(ref,dict,size);
+    }
+
+    buff = (char**)malloc(sizeof(char*));
     if(buff == NULL){
         fprintf(stderr,"buffer could not allocated\n");
-        return NULL;
+        return NULL; 
     }
 
     for(i = 0; i < reflen; ++i){
         rlen = strlen(ref[i]);
-
         for(j = 0; j < dictlen; ++j){
-        
-            //fprintf(stderr,"  \"\e[93m%s\e[0m\" << \"\e[93m%s\e[0m\" ",ref[i],dict[j]);
-        
             dlen = strlen(dict[j]);
             catlen = rlen + dlen;
-            
-            if(catlen <= max){
-
-                buff[match] = (char*)malloc(sizeof(char)*(catlen));
-                strcpy(buff[match],ref[i]);
-                strcat(buff[match],dict[j]);
-                //fprintf(stderr,"\runder max   \e[92m%s\e[0m <-- (%ld/%d)",buff[match],strlen(buff[match]),max);
-                ++match;
-                buff = (char**)realloc(buff,sizeof(char*)*(match+1)); 
+            if(catlen < max){
+                buff[_true] = (char*)malloc(sizeof(char)*(catlen));
+                strcpy(buff[_true],ref[i]);
+                strcat(buff[_true],dict[j]);
+                //fprintf(stderr,"\rtrue = %d --> \e[92m%s\e[0m",i,buff[_true]);
+                //fprintf(stderr,"\n\e[95m%s\e[0m\n",dict[j]);
+                if(strcmp(buff[_true],"hello{123}") == 0){
+                    fprintf(stderr,"password is ... \e[95m%s\e[0m\n",buff[_true]);
+                    return NULL;
+                }
+                ++_true;
+                buff = (char**)realloc(buff,sizeof(char*)*(_true+1)); 
             }
-            ++loop;
-        }  
+        }
+        if(loop > 1)
+            free(ref[i]);
     }
-
-    if(match == 0){
+    ++loop;
+    if(_true == 0){
         fprintf(stderr,"--==\e[96m FINISHED \e[0m==--\n");
         fprintf(stderr,"loops - \e[95m%d\e[0m\n",loop);
-        fprintf(stderr,"depth - \e[95m%d\e[0m\n",depth); 
-
         return NULL;
     }else{
-        fprintf(stderr,"(depth)\e[92m %d \e[0m",depth);
-        fprintf(stderr,": (match)\e[93m %d \e[0m\n",match);
-
+        fprintf(stderr,"(depth)\e[92m %d \e[0m",loop);
+        fprintf(stderr,": (true)\e[93m %d \e[0m\n",_true);
     }
-
-    ++depth;
+    free(ref);
     buff = dictstrcat(
             buff,dict,
-            match,dictlen,
-            depth,
+            _true,dictlen,
+            loop,
             max);
+
 }
 
 void getargs(int argc, char **argv)
@@ -149,16 +173,15 @@ void getargs(int argc, char **argv)
 
     dir = argv[1];
     max = atoi(argv[2]);
-    
-    
+     
     fstr = filestrings(dir);
     t = strsplit(fstr,"\n");
+    
     dict = t.str;
-    ref = t.str;  
     len = t.indx;
 
     dcatstr = dictstrcat(
-            ref,
+            NULL,
             dict,
             len,
             len,
@@ -172,3 +195,4 @@ int main(int argc, char **argv)
 {
     getargs(argc,argv);
 }
+
